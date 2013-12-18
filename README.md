@@ -12,7 +12,7 @@ with an Arduino as a joystick (or basically any device able to
 send you info with the correct protocol on the serial port)
 
 ## Sounds cool, how do I compile it ?
-This is rather simple, all you need is
+This is rather simple, all you need is:
  
  * libusb-1.0 developpement files
  * cmake
@@ -31,7 +31,8 @@ of the source code (the one this Readme is in):
 Running the software is rather simple, once you've compiled it
 you should be able to execute the following command **as the root user**
 if you do not do that, it will just fail !
-    ./usbturret [serialport=/dev/ttyACM0]
+    
+		./usbturret [serialport=/dev/ttyACM0]
 
 ## Serial protocol
 **to be written**
