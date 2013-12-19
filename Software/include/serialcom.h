@@ -16,7 +16,7 @@
 
 /**
  * \file serialcom.h
- * \author Thomas Maurice
+ * \author Thomas Maurice, Benoit Maliar
  * 
  * \brief Serial port management prototypes
  * \version 0.1

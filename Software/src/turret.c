@@ -16,7 +16,7 @@
 
 /**
  * \file turret.c
- * \author Thomas Maurice
+ * \author Thomas Maurice, Benoit Maliar
  * 
  * \brief Turret handling functions
  * \version 0.1

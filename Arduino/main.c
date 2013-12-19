@@ -1,3 +1,40 @@
+/**
+ *            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+ *                 Version 2, December 2004
+ *
+ *		Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+ *		 
+ * 		Everyone is permitted to copy and distribute verbatim or modified
+ * 		copies of this license document, and changing it is allowed as long
+ *		as the name is changed.
+ * 
+ *				   DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+ * 		  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+ *	 
+ *		 0. You just DO WHAT THE FUCK YOU WANT TO.
+ */
+
+/**
+ * \file main.c
+ * \author Thomas Maurice
+ * 
+ * \brief Arduino-joystick main program
+ * \version 0.1
+ * 
+ * This program will catch all the Joystick movements
+ * (joystick shield from Sparkfun) and the button presses
+ * and convert them into orders to drive up to four (4!!!)
+ * USB missile launching turrets (Tenx). The program will wait
+ * until the computer writes a byte on the serial link (any byte, btw)
+ * and send a reply containing orders for the turrets.
+ * 
+ * These orders are in one byte:
+ *    UP | DOWN | RIGHT | LEFT | FIRE | TURSEL[2:0]
+ * Where UP, DOWN, RIGHT, LEFT and FIRE are 0 or 1 depending of what
+ * you want to do, and TURSEL[2:0] is 0, 1, 2, 3 depending on the
+ * turret you want to drive.
+ */
+ 
 #include <avr/io.h>		// for the input/output register
 #include <avr/interrupt.h> 	
 #include <util/delay.h>
