@@ -13,3 +13,13 @@
  *	 
  *		 0. You just DO WHAT THE FUCK YOU WANT TO.
  */
+ 
+/**
+ * \file serialcom.h
+ * \author Thomas Maurice
+ * 
+ * \brief Serial port management
+ * \version 0.1
+ */
+
+#include <serialcom.h>

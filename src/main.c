@@ -30,6 +30,7 @@
 #include <libusb-1.0/libusb.h>
 
 #include <turret.h>
+#include <serialcom.h>
 
 /** Serial port used by the program */
 #define SERIAL_PORT "/dev/ttyACM0"
