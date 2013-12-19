@@ -25,6 +25,23 @@
 #ifndef SERIALCOM_H
 #define SERIALCOM_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
+#include <termios.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <fcntl.h>
 
+#define SPEED 	9600
 
+struct termios saveterm;
+unsigned char serial(int fd);
+// Serial port initialisation
+int init_serial(char *device,int speed);
+// Close serial port
+
+void close_serial(int fd);
 #endif

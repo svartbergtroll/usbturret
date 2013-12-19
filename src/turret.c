@@ -25,9 +25,7 @@
 #include <turret.h>
 
 /**
- * Send an order to the turret. This is a *step* order, this is to say
- * that if you want the turret to go up, then it will go up for 300ms
- * in order to make a short move.
+ * Send an order to the turret. This is a *continuous* order
  * 
  * \param handle USB handle for the device
  * \param cmd Command to send, must be one of the commands enum constants
@@ -47,18 +45,13 @@ void send_command(libusb_device_handle* handle, int cmd) {
 		case CMD_LEFT: req[1] = 0x01; break;
 		case CMD_RIGHT: req[2] = 0x01; break;
 		case CMD_FIRE: req[5] = 0x01; break;
+		case CMD_STOP: break;
 		default: break;
 	}
 	
 	libusb_control_transfer(handle, 0x21, 0x09, 0x02, 0x01, request1, 8, 100);
 	libusb_control_transfer(handle, 0x21, 0x09, 0x02, 0x01, request2, 8, 100);
 	libusb_control_transfer(handle, 0x21, 0x09, 0x02, 0x01, req, 64, 100);
-	
-	usleep(300000);
-	
-	libusb_control_transfer(handle, 0x21, 0x09, 0x02, 0x01, request1, 8, 100);
-	libusb_control_transfer(handle, 0x21, 0x09, 0x02, 0x01, request2, 8, 100);
-	libusb_control_transfer(handle, 0x21, 0x09, 0x02, 0x01, stop, 64, 100);
 	
 	return;
 }

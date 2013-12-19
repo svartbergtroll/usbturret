@@ -51,7 +51,8 @@ enum commands {
 	CMD_DOWN,
 	CMD_RIGHT,
 	CMD_LEFT,
-	CMD_FIRE
+	CMD_FIRE,
+	CMD_STOP
 };
 
 void send_command(libusb_device_handle* handle, int cmd); //!< Send an order to the turret

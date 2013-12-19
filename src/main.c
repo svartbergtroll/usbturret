@@ -39,6 +39,13 @@
  * \brief main, lol
  */
 int main(int argc, char ** argv) {
+
+	int serial_fd; //device's pointer for Arduino
+	
+	// Initialisation of Arduino' link
+	printf("Initializing the Arduino...\n");
+	serial_fd = init_serial(SERIAL_PORT,SPEED);
+	 
 	printf("Initializing the library...\n");
 	libusb_context *context = newContext();
 	
@@ -66,88 +73,41 @@ int main(int argc, char ** argv) {
 		uint8_t address = libusb_get_device_address(device);
 		
 		if(desc.idVendor == VENDOR_TURRET && desc.idProduct == PRODUCT_TURRET) {
-			/*status = libusb_get_active_config_descriptor(device, &configDescriptor);
-			if(status != 0) {
-				libusb_exit(context); // Clean exit
-				perror("libusb_get_active_config_descriptor");
-				exit(-1);
-			}
-			
-			printf("\t-> Turret detected ... ");
-			status = libusb_open(device, &handles[currentDevice]);
-			if(status == 0) {
-				printf("[HANDLED]\n");
-			} else {
-				printf("[FAILED]\n");
-				perror("libusb_open");
-				libusb_exit(context); // Clean exit
-				exit(-1);
-			}
-			
-			for(int i = 0; i < configDescriptor->bNumInterfaces; i++) {
-				if(libusb_kernel_driver_active(handles[currentDevice], configDescriptor->interface[i].altsetting[0].bInterfaceNumber)) {
-					status = libusb_detach_kernel_driver(handles[currentDevice], configDescriptor->interface[i].altsetting[0].bInterfaceNumber);
-					if(status != 0){
-						libusb_exit(context); // Clean exit
-						perror("libusb_detach_kernel_driver");
-						exit(-1);
-					} else {
-						printf("\t* Kernel has released interface %d \\o/\n", i);
-					}
-				}
-			}
-			
-			libusb_free_config_descriptor(configDescriptor);
-			status = libusb_get_config_descriptor(device, 0, &configDescriptor);
-			if(status != 0) {
-				libusb_exit(context); // Clean exit
-				perror("libusb_get_config_descriptor");
-				exit(-1);
-			}
-			
-			if(libusb_set_configuration(handles[currentDevice], configDescriptor->bConfigurationValue) == 0) {
-				printf("\tConfiguration 0 applied\n");
-			} else {
-				libusb_exit(context); // Clean exit
-				perror("libusb_set_configuration");
-				exit(-1);
-			}
-			
-			for(int i = 0; i < configDescriptor->bNumInterfaces; i++) {
-				if(libusb_claim_interface(handles[currentDevice], configDescriptor->interface[i].altsetting[0].bInterfaceNumber) == 0) {
-					printf("\tInterface %d successfuly claimed !\n", i);
-				} else {
-					//libusb_exit(context); // Clean exit
-					perror("libusb_claim_interface");
-					//exit(-1);
-				}
-			}*/
-			
 			configureTurret(device, &handles[currentDevice]);
-			
-			char c = 0;
-			
-			while(1) {
-				c = getc(stdin);
-				if(c == 'a') break;
-				switch(c) {
-					case 'z': send_command(handles[currentDevice], CMD_UP); break;
-					case 's': send_command(handles[currentDevice], CMD_DOWN); break;
-					case 'd': send_command(handles[currentDevice], CMD_RIGHT); break;
-					case 'q': send_command(handles[currentDevice], CMD_LEFT); break;
-					case 'e': send_command(handles[currentDevice], CMD_FIRE); break;
-					default: break;
-				}
-			}
-			
-			releaseHandle(handles[currentDevice]);
 			
 			currentDevice++;
 		}
 	}
+	
+	char c = 0;
+			
+	while(1) {
+		unsigned char c = serial(serial_fd);
+		int fire = c&0x08;
+		int d = c&0x3;
+		int order = (c>>4);
+		//printf("%x %d\n", c, d);
+		if(handles[d] == NULL) continue;
+		switch(order) {
+			case 0x0: send_command(handles[d], CMD_STOP); break;
+			case 0x8: send_command(handles[d], CMD_UP); break;
+			case 0x4: send_command(handles[d], CMD_DOWN); break;
+			case 0x2: send_command(handles[d], CMD_RIGHT); break;
+			case 0x1: send_command(handles[d], CMD_LEFT); break;
+		}
 
+		if(fire != 0) // FIRE !
+			send_command(handles[d], CMD_FIRE);
+		usleep(50000);
+	}
+			
+	for(int i = 0; i < 4; i++)
+		releaseHandle(handles[i]);
+	
 	libusb_free_device_list(list,1);
 	libusb_exit(context);
+	//Closing Arduino's link
+	close_serial(serial_fd);
 	
 	return EXIT_SUCCESS;
 }
