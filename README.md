@@ -19,13 +19,34 @@ This is rather simple, all you need is:
  * gcc
  * an USB turret
 
-Just run the following commands in the root directory
-of the source code (the one this Readme is in):
+Just run the following commands in the Software/ directory:
     
-		mkdir buld
+		mkdir build
 		cd build
 		cmake ..
 		make
+
+## Didn't you mention some Arduino stuff ?
+Actually yes ! You also have to compile the software
+designed for the arduino and burn it onto the chip.
+To do that just go in the Arduino/ folder and run
+
+    make
+
+Yep, no ```cmake``` this time ! Then run
+
+    make upload
+
+to flash the program into the Arduino. The you can
+connect the Arduino to the PC and run the main software.
+
+If you have problems uploading the software on the Arduino
+please make sure that your user is member of the *dialout*
+group. If not run :
+
+    usermod -a G dialout <user>
+
+and logout/login and everything should be fine ! If not, *RTFM* :)
 
 ## How to run it ?
 Running the software is rather simple, once you've compiled it
