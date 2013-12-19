@@ -46,7 +46,7 @@ group. If not run :
 
     usermod -a G dialout <user>
 
-and logout/login and everything should be fine ! If not, *RTFM* :)
+and logout/login and everything should be fine ! If not, **RTFM** :)
 
 ## How to run it ?
 Running the software is rather simple, once you've compiled it
