@@ -70,6 +70,7 @@ typedef union {
 	};
 } Register;
 
+// Turrets definitions
 #define T1 0x1
 #define T2 0x2
 #define T3 0x4
@@ -106,6 +107,7 @@ void send_serial(u8 c) {
 	UDR0=c;
 }
 
+// Get a sample from the ATD
 unsigned int ad_sample(void){
 	ADCSRA|=(1<<ADSC);
 	while(bit_is_set(ADCSRA, ADSC));
@@ -113,27 +115,36 @@ unsigned int ad_sample(void){
 }
 
 void output_init(void){
-	DDRB |= 0x1F;
+	DDRB |= 0x1F; // PORTB[4..0]
 }
 
 void input_init(void){
-	DDRD &= 0x0;  // PIN 2 as input
-	PORTD |= 0xFF; // Pull-up activated on PIN 2
+	DDRD &= 0x0;  // PORTD as input
+	PORTD |= 0xFF; // Pull-up activated on PORTD
 }
 
 int main(void){
+	// Initializing the Arduino
 	output_init();
 	input_init();
 	init_serial();
 	
+	// Default setting
 	currentTurret = T1;
 	
+	// Unionize the portb and d for easy access
 	Register *portb = (Register*)(&PORTB);
 	Register *portd = (Register*)(&PIND);
+	
+	// Command byte
 	Register cmd;
 	
 	while(1) {
 		cmd.byte = 0;
+		/*
+		 * Check if the user wants to change 
+		 * which turret he is playing with
+		 */
 		if(portd->b6 == 0)
 			currentTurret = T4;
 		else if(portd->b5 == 0)
@@ -142,6 +153,7 @@ int main(void){
 			currentTurret = T3;
 		else if(portd->b3 == 0)
 			currentTurret = T1;
+		// For the "fire" button
 		else if(portd->b2 == 0) {
 			for(u8 i = 0; i < 10; i++) {
 				portb->byte ^= 0x0F;
@@ -150,6 +162,10 @@ int main(void){
 			cmd.b3 = 1;
 		}
 		
+		/*
+		 * Set the direction part of the byte
+		 * The high bits of the command byte.
+		 */
 		ad_init(0);
 		u8 s = ad_sample();
 		
@@ -173,6 +189,9 @@ int main(void){
 			cmd.high |= 0x4;
 		}
 		
+		/*
+		 * Set the low part of the command byte: TURSEL[2..0]
+		 */
 		switch (currentTurret) {
 			case T1:
 				cmd.low |= 0x0;
@@ -188,12 +207,12 @@ int main(void){
 				break;
 		}
 		
-		portb->b4 = 1;
-		portb->low = currentTurret;
-		send_serial(cmd.byte);
+		portb->b4 = 1; // Turn the red LED on
+		portb->low = currentTurret; // Show which turret we are controlling
+		send_serial(cmd.byte); // Send the command byte to the computer
 		while(!(UCSR0A&(1<<RXC0)));
-		u8 r = UDR0;
-		portb->b4 = 0;
+		u8 r = UDR0; // Read the byte to reset the flag
+		portb->b4 = 0; // Turn the red LED off
 	}
 	
 	return 0;
