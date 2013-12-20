@@ -56,4 +56,19 @@ if you do not do that, it will just fail !
 		./usbturret [serialport=/dev/ttyACM0]
 
 ## Serial protocol
-**to be written**
+The Arduino will wait for the computer to send it one order byte (any byte
+will do it). It will act as a trigger and the Arduino will scan the state
+of the joystick shield to send back an order byte to command the turret.
+
+The orders sent by the Arduino to the computer are in one byte:
+
+    UP | DOWN | RIGHT | LEFT | FIRE | TURSEL[2:0]
+ 
+Where UP, DOWN, RIGHT, LEFT and FIRE are 0 or 1 depending of what
+you want to do, and TURSEL[2:0] is 0, 1, 2, 3 depending on the
+turret you want to drive.
+
+For exemple, if you want to make the 4th (TURSEL=3) turret go down, you will send:
+    01000111 = 0x54
+
+Easy isn't it ?
