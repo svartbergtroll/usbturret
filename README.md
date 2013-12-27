@@ -38,7 +38,7 @@ Yep, no ```cmake``` this time ! Then run
 
     make upload
 
-to flash the program into the Arduino. The you can
+to flash the program into the Arduino. Then you can
 connect the Arduino to the PC and run the main software.
 
 If you have problems uploading the software on the Arduino
