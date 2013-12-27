@@ -14,8 +14,9 @@ send you info with the correct protocol on the serial port)
 ## Sounds cool, how do I compile it ?
 This is rather simple, all you need is:
  
- * libusb-1.0 developpement files
+ * libusb-1.0 developpement files (libusb-1.0-dev or libusb-1.0-devel)
  * cmake
+ * make
  * gcc
  * an USB turret
 
@@ -69,6 +70,10 @@ you want to do, and TURSEL[2:0] is 0, 1, 2, 3 depending on the
 turret you want to drive.
 
 For exemple, if you want to make the 4th (TURSEL=3) turret go down, you will send:
-    01000111 = 0x54
+    01000111 = 0x53
+
+Please note that the commands are **continous** that is to say that if you send the
+byte above the turrent will go down forever (or until it cannot go down any further
+or you send the stop byte to the turret. Here for the 4th one it will be 0x03)
 
 Easy isn't it ?
