@@ -80,8 +80,9 @@ int main(int argc, char ** argv) {
 	}
 	
 	char c = 0;
-			
-	while(1) {
+	int run = 1; //!< Loop indicator.
+
+	while(run == 1) {
 		unsigned char c = serial(serial_fd);
 		int fire = c&0x08;
 		int d = c&0x3;
@@ -94,6 +95,11 @@ int main(int argc, char ** argv) {
 			case 0x4: send_command(handles[d], CMD_DOWN); break;
 			case 0x2: send_command(handles[d], CMD_RIGHT); break;
 			case 0x1: send_command(handles[d], CMD_LEFT); break;
+		}
+		
+		if(c == 0xFF) {
+			run = 0; // Stop the main loop
+			printf("Software exited by the Arduino controller, bye !\n");
 		}
 
 		if(fire != 0) // FIRE !

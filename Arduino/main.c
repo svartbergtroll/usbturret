@@ -35,7 +35,7 @@
  * turret you want to drive.
  */
  
-#include <avr/io.h>		// for the input/output register
+#include <avr/io.h>
 #include <avr/interrupt.h> 	
 #include <util/delay.h>
 #include <stdlib.h>
@@ -76,9 +76,11 @@ typedef union {
 #define T3 0x4
 #define T4 0x8
 
-u8 currentTurret;
+u8 currentTurret; //!< Global variable used to select the turret to control
 
-// For the AD converter
+/**
+ * Initializes the ADC
+ */
 void ad_init(unsigned char channel)   
 {   
 	ADCSRA|=(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);   
@@ -87,6 +89,9 @@ void ad_init(unsigned char channel)
 	ADCSRA|=(1<<ADEN);
 }   
 
+/**
+ * Initializes the serial port
+ */
 void init_serial(void) {
 	/* ACHTUNG : we suppose UBRR value < 0xff */
 	/* Not true in all case */
@@ -102,27 +107,41 @@ void init_serial(void) {
 	UCSR0C = 0x06;
 }
 
+/**
+ * Send a byte on the serial link
+ */
 void send_serial(u8 c) {
 	while(!(UCSR0A&(1<<UDRE0)));
 	UDR0=c;
 }
 
-// Get a sample from the ATD
+/**
+ * Get a sample from the ATD
+ */
 unsigned int ad_sample(void){
 	ADCSRA|=(1<<ADSC);
 	while(bit_is_set(ADCSRA, ADSC));
 	return ADCH;
 }
 
+/**
+ * Initializes the output pins
+ */
 void output_init(void){
 	DDRB |= 0x1F; // PORTB[4..0]
 }
 
+/**
+ * Initializes the input pins
+ */
 void input_init(void){
 	DDRD &= 0x0;  // PORTD as input
 	PORTD |= 0xFF; // Pull-up activated on PORTD
 }
 
+/**
+ * main
+ */
 int main(void){
 	// Initializing the Arduino
 	output_init();
@@ -138,6 +157,7 @@ int main(void){
 	
 	// Command byte
 	Register cmd;
+	u8 stop = 0; //!< Stops the computer software
 	
 	while(1) {
 		cmd.byte = 0;
@@ -145,7 +165,9 @@ int main(void){
 		 * Check if the user wants to change 
 		 * which turret he is playing with
 		 */
-		if(portd->b6 == 0)
+		if(portd->b6 == 0 && portd->b5 == 0)
+			stop = 1;
+		else if(portd->b6 == 0)
 			currentTurret = T4;
 		else if(portd->b5 == 0)
 			currentTurret = T2;
@@ -207,6 +229,10 @@ int main(void){
 				break;
 		}
 		
+		if(stop == 1)
+			cmd.byte = 0xFF; // 0xFF, aka 'the impossible byte" to stop everything
+		
+		stop = 0;
 		portb->b4 = 1; // Turn the red LED on
 		portb->low = currentTurret; // Show which turret we are controlling
 		send_serial(cmd.byte); // Send the command byte to the computer

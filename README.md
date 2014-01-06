@@ -76,4 +76,11 @@ Please note that the commands are **continous** that is to say that if you send 
 byte above the turrent will go down forever (or until it cannot go down any further
 or you send the stop byte to the turret. Here for the 4th one it will be 0x03)
 
+To stop the main program from the Arduino device it is easy, you just have
+to send through the serial link the *impossible byte* which is ```0xFF```.
+It is impossible because it asks the turret to go in every direction, which
+of course is not possible, so it is used as a code to make everything stop.
+In the default configuration this is achieved by pressing simultaneousely
+two of the switches of the remote.
+
 Easy isn't it ?
