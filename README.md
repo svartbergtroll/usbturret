@@ -19,6 +19,7 @@ This is rather simple, all you need is:
  * make
  * gcc
  * an USB turret
+ * a target (preferably someone slow)
 
 Just run the following commands in the Software/ directory:
     
