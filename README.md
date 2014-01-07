@@ -58,7 +58,10 @@ Running the software is rather simple, once you've compiled it
 you should be able to execute the following command **as the root user**
 if you do not do that, it will just fail !
     
-		./usbturret [serialport=/dev/ttyACM0] # For now the argument is hard-coded, so no need to specify it
+		./usbturret [serialport=/dev/ttyACM0]
+
+If you don't specifiy a serial port in the command line, the program
+will default to ```/dev/ttyACM0```
 
 ## Serial protocol
 The Arduino will wait for the computer to send it one order byte (any byte
