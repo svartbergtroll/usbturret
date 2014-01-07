@@ -21,7 +21,8 @@ This is rather simple, all you need is:
  * an USB turret
  * a target (preferably someone slow)
 
-Just run the following commands in the Software/ directory:
+To compile the project, just run the following commands in the Software/
+directory:
     
 		mkdir build
 		cd build
@@ -30,7 +31,8 @@ Just run the following commands in the Software/ directory:
 
 ## Didn't you mention some Arduino stuff ?
 Actually yes ! You also have to compile the software
-designed for the arduino and burn it onto the chip.
+designed for the arduino and burn it onto the chip (not with these matches!
+put them down right now !)
 To do that just go in the Arduino/ folder and run
 
     make
