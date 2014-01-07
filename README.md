@@ -29,6 +29,9 @@ directory:
 		cmake ..
 		make
 
+Normally it shall compile flawlessly and thou shalt see appear a
+nice ```usbturret``` executable file in the build directory.
+
 ## Didn't you mention some Arduino stuff ?
 Actually yes ! You also have to compile the software
 designed for the arduino and burn it onto the chip (not with these matches!
