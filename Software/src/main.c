@@ -26,6 +26,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include <signal.h>
+#include <string.h>
 
 #include <libusb-1.0/libusb.h>
 
@@ -35,26 +37,55 @@
 /** Serial port used by the program */
 #define SERIAL_PORT "/dev/ttyACM0"
 
+/** Main loop indicator, will be set to 0 if we catch ctrl-c */
+int main_loop_run = 1;
+
+/**
+ * Signal handler so that we can exit the software
+ * properly with ctrl-c. This will clear main_loop_run and
+ * terminate the main loop of the program. So that all the allocated
+ * stuff can be properly unallocated in order to limitate the
+ * memory leaks :-)
+ * 
+ * \param[in] signo Signal we just caught - not used but in the std prototype
+ */
+void signal_handler(int signo) {
+	printf("Stopped by user (SIGINT)\n");
+	main_loop_run = 0;
+}
+
 /**
  * \brief main, lol
  */
 int main(int argc, char ** argv) {
-
-	int serial_fd; //device's pointer for Arduino
+	char port[256]; //!< serial port location
+	int serial_fd; //!< serial port file descriptor
+	int currentDevice = 0; //!< Current USB turret enumerated
+	libusb_device_handle *handles[4]; //!< Handle array, shall contain all the four turrets (Like "Gilles")
+	//!< -> (gilles of the turret, lol)
+	libusb_device **list; //!< List of USB devices connected
+	
+	if(argc != 2)
+		strncpy(port, SERIAL_PORT, 256); // strncpy to avoid buffer overflows :-)
+	else
+		strncpy(port, argv[1], 256);
+	
+	// Initializing signals
+	printf("Initializing SIGINT signal handler...\n");
+	if (signal(SIGINT, signal_handler) == SIG_ERR) {
+        printf(" > Warning, I won't be able to catch SIGINT\n");
+	}
 	
 	// Initialisation of Arduino' link
-	printf("Initializing the Arduino...\n");
-	serial_fd = init_serial(SERIAL_PORT,SPEED);
+	printf("Initializing the Arduino on port %s...\n", port);
+	serial_fd = init_serial(port,SPEED/* defined in serialcom.h */);
 	 
 	printf("Initializing the library...\n");
 	libusb_context *context = newContext();
 	
-	int currentDevice = 0; //!< Current USB turret enumerated
-	libusb_device_handle *handles[4]; //!< Handle array, shall contain all the four turrets (Like "Gilles")
-	//!< -> (gilles of the turret, lol)
 	for(int i = 0; i < 4; i++) handles[i] = NULL; // Init to NULL just in case we have < 4 devices
+	// NULL devices shall never be processed
 	
-	libusb_device **list; //!< List of USB devices connected
 	size_t count = libusb_get_device_list(context, &list); // fills in device list
 	if(count<0) {
 		perror("libusb_get_device_list");
@@ -62,7 +93,7 @@ int main(int argc, char ** argv) {
 		exit(-1);
 	}
 	
-	for(size_t i = 0; i < count; i++){
+	for(size_t i = 0; i < count; i++){ // Enumerate and configure the devices
 		libusb_device *device = list[i];
 		struct libusb_config_descriptor *configDescriptor;
 		struct libusb_device_descriptor desc;
@@ -73,21 +104,22 @@ int main(int argc, char ** argv) {
 		uint8_t address = libusb_get_device_address(device);
 		
 		if(desc.idVendor == VENDOR_TURRET && desc.idProduct == PRODUCT_TURRET) {
-			configureTurret(device, &handles[currentDevice]);
+			configureTurret(device, &handles[currentDevice]); // Configure the device
 			
 			currentDevice++;
 		}
 	}
 	
+	// NOW the fun can begin !
+	
 	char c = 0;
-	int run = 1; //!< Loop indicator.
 
-	while(run == 1) {
+	while(main_loop_run == 1) { // will be stopped via ctrl-c
 		unsigned char c = serial(serial_fd);
 		int fire = c&0x08;
 		int d = c&0x3;
 		int order = (c>>4);
-		//printf("%x %d\n", c, d);
+		printf("%x %d\n", c, d);
 		if(handles[d] == NULL) continue;
 		switch(order) {
 			case 0x0: send_command(handles[d], CMD_STOP); break;
@@ -97,23 +129,27 @@ int main(int argc, char ** argv) {
 			case 0x1: send_command(handles[d], CMD_LEFT); break;
 		}
 		
-		if(c == 0xFF) {
-			run = 0; // Stop the main loop
-			printf("Software exited by the Arduino controller, bye !\n");
-		}
-
 		if(fire != 0) // FIRE !
 			send_command(handles[d], CMD_FIRE);
-		usleep(50000);
-	}
 			
+		usleep(50000); // Small delay to make the movement consistant and let
+		// the Arduino breathe a bit
+	}
+	
+	// Once we've finished let's clean up the mess
+	
 	for(int i = 0; i < 4; i++)
 		releaseHandle(handles[i]);
 	
+	// Free the list and the lib context
 	libusb_free_device_list(list,1);
 	libusb_exit(context);
+	
 	//Closing Arduino's link
 	close_serial(serial_fd);
 	
+	// Finally, return.
 	return EXIT_SUCCESS;
 }
+
+/* EOF, thanks for reading ;-) */

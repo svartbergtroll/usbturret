@@ -157,7 +157,6 @@ int main(void){
 	
 	// Command byte
 	Register cmd;
-	u8 stop = 0; //!< Stops the computer software
 	
 	while(1) {
 		cmd.byte = 0;
@@ -165,9 +164,7 @@ int main(void){
 		 * Check if the user wants to change 
 		 * which turret he is playing with
 		 */
-		if(portd->b6 == 0 && portd->b5 == 0)
-			stop = 1;
-		else if(portd->b6 == 0)
+		if(portd->b6 == 0)
 			currentTurret = T4;
 		else if(portd->b5 == 0)
 			currentTurret = T2;
@@ -229,10 +226,6 @@ int main(void){
 				break;
 		}
 		
-		if(stop == 1)
-			cmd.byte = 0xFF; // 0xFF, aka 'the impossible byte" to stop everything
-		
-		stop = 0;
 		portb->b4 = 1; // Turn the red LED on
 		portb->low = currentTurret; // Show which turret we are controlling
 		send_serial(cmd.byte); // Send the command byte to the computer
