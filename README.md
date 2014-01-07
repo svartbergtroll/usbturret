@@ -83,7 +83,7 @@ This is kinda easy too. Just hit Ctrl-C and the program will stop.
 Just like any other Unix program will you say ? But... NO! Because
 this one is _well designed_ and will catch the SIGINT signal you send
 it and cleanup everything properly after catching it. So don't be
-affraid of the aweful memory leaks, we handle that.
+afraid of the aweful memory leaks, we handle that.
 
 Have fun !
 
