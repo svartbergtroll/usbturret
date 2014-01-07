@@ -78,7 +78,7 @@ or you send the stop byte to the turret. Here for the 4th one it will be 0x03)
 
 Easy isn't it ?
 
-# How to stop it ?
+## How to stop it ?
 This is kinda easy too. Just hit Ctrl-C and the program will stop.
 Just like any other Unix program will you say ? But... NO! Because
 this one is _well designed_ and will catch the SIGINT signal you send
