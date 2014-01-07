@@ -33,7 +33,8 @@ directory:
 Actually yes ! You also have to compile the software
 designed for the arduino and burn it onto the chip (not with these matches!
 put them down right now !)
-To do that just go in the Arduino/ folder and run
+
+To perform that just go in the Arduino/ folder and run
 
     make
 
