@@ -119,7 +119,8 @@ int main(int argc, char ** argv) {
 		int fire = c&0x08;
 		int d = c&0x3;
 		int order = (c>>4);
-		printf("%x %d\n", c, d);
+		// Uncomment to see the values
+		//printf("%x %d\n", c, d);
 		if(handles[d] == NULL) continue;
 		switch(order) {
 			case 0x0: send_command(handles[d], CMD_STOP); break;
