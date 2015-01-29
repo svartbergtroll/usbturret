@@ -5,6 +5,24 @@ Developpement information:
  * *Authors:* Thomas Maurice and Benoit Maliar
  * *License:* WTF Public License v2
 
+## License information
+    
+            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+             Version 2, December 2004
+    
+    Copyright (C) 2013 Thomas Maurice <thomas@maurice.fr>
+                    and Benoit Maliar
+    
+    Everyone is permitted to copy and distribute verbatim or modified
+    copies of this license document, and changing it is allowed as long
+    as the name is changed.
+    
+    DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+    
+    0. You just DO WHAT THE FUCK YOU WANT TO.
+
+
 ## What is this ?
 This software is a simple user-mode "driver" for the Tenx
 USB missile launchers ! It enables you to drive up to 4 turrets
@@ -13,7 +31,7 @@ send you info with the correct protocol on the serial port)
 
 ## Sounds cool, how do I compile it ?
 This is rather simple, all you need is:
- 
+
  * libusb-1.0 developpement files (libusb-1.0-dev or libusb-1.0-devel)
  * cmake
  * make
@@ -23,7 +41,7 @@ This is rather simple, all you need is:
 
 To compile the project, just run the following commands in the Software/
 directory:
-    
+
 		mkdir build
 		cd build
 		cmake ..
@@ -60,7 +78,7 @@ and logout/login and everything should be fine ! If not, **RTFM** :)
 Running the software is rather simple, once you've compiled it
 you should be able to execute the following command **as the root user**
 if you do not do that, it will just fail !
-    
+
 		./usbturret [serialport=/dev/ttyACM0]
 
 If you don't specifiy a serial port in the command line, the program
@@ -74,7 +92,7 @@ of the joystick shield to send back an order byte to command the turret.
 The orders sent by the Arduino to the computer are in one byte:
 
     UP | DOWN | RIGHT | LEFT | FIRE | TURSEL[2:0]
- 
+
 Where UP, DOWN, RIGHT, LEFT and FIRE are 0 or 1 depending of what
 you want to do, and TURSEL[2:0] is 0, 1, 2, 3 depending on the
 turret you want to drive.
@@ -96,4 +114,3 @@ it and cleanup everything properly after catching it. So don't be
 afraid of the aweful memory leaks, we handle that.
 
 Have fun !
-

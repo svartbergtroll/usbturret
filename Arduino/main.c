@@ -16,7 +16,7 @@
 
 /**
  * \file main.c
- * \author Thomas Maurice
+ * \author Thomas Maurice <thomas@maurice.fr>
  * 
  * \brief Arduino-joystick main program
  * \version 0.1
@@ -231,6 +231,7 @@ int main(void){
 		send_serial(cmd.byte); // Send the command byte to the computer
 		while(!(UCSR0A&(1<<RXC0)));
 		u8 r = UDR0; // Read the byte to reset the flag
+		r = r; // Phony assignation
 		portb->b4 = 0; // Turn the red LED off
 	}
 	
